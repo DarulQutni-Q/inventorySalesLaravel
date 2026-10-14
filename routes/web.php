@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,4 +22,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         return view('home');
     })->name('dashboard');
+
+    // Area khusus admin: middleware admin menolak staff via URL langsung (403).
+    Route::middleware('admin')->group(function () {
+        Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+    });
 });
