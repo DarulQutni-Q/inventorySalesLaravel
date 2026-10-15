@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Product;
 use App\Models\Purchase;
 use Illuminate\Support\Facades\DB;
 
@@ -33,6 +34,12 @@ class PurchaseService
                     'unit_cost' => $item['unit_cost'],
                     'subtotal' => $subtotal,
                 ]);
+
+                // Stok bertambah otomatis setiap pembelian tersimpan.
+                // Baris ini di dalam transaction yang sama: kalau ada item
+                // yang gagal, penambahan stok ikut dibatalkan (rollback).
+                Product::where('id', $item['product_id'])
+                    ->increment('stock', $item['quantity']);
 
                 $total += $subtotal;
             }
