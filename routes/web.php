@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,8 +24,10 @@ Route::middleware('auth')->group(function () {
         return view('home');
     })->name('dashboard');
 
-    // Area khusus admin: middleware admin menolak staff via URL langsung (403).
+    // Master data: lihat untuk semua user login, ubah hanya untuk admin.
+    Route::resource('categories', CategoryController::class)->only(['index']);
     Route::middleware('admin')->group(function () {
         Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+        Route::resource('categories', CategoryController::class)->except(['index']);
     });
 });
