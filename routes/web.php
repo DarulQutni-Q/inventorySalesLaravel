@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -25,9 +26,13 @@ Route::middleware('auth')->group(function () {
     })->name('dashboard');
 
     // Master data: lihat untuk semua user login, ubah hanya untuk admin.
-    Route::resource('categories', CategoryController::class)->only(['index']);
+    // Route admin didaftarkan dulu supaya /products/create tidak tertangkap
+    // oleh /products/{product} (route show yang didaftarkan setelahnya).
     Route::middleware('admin')->group(function () {
         Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
         Route::resource('categories', CategoryController::class)->except(['index']);
+        Route::resource('products', ProductController::class)->except(['index', 'show']);
     });
+    Route::resource('categories', CategoryController::class)->only(['index']);
+    Route::resource('products', ProductController::class)->only(['index', 'show']);
 });
