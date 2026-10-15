@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,12 +29,17 @@ Route::middleware('auth')->group(function () {
     })->name('dashboard');
 
     // Transaksi: staff dan admin boleh membuat dan melihat.
-    // /create didaftarkan sebelum /{purchase} supaya tidak tertangkap
+    // /create didaftarkan sebelum /{id} supaya tidak tertangkap
     // oleh route show.
     Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases.index');
     Route::get('/purchases/create', [PurchaseController::class, 'create'])->name('purchases.create');
     Route::post('/purchases', [PurchaseController::class, 'store'])->name('purchases.store');
     Route::get('/purchases/{purchase}', [PurchaseController::class, 'show'])->name('purchases.show');
+
+    Route::get('/sales', [SaleController::class, 'index'])->name('sales.index');
+    Route::get('/sales/create', [SaleController::class, 'create'])->name('sales.create');
+    Route::post('/sales', [SaleController::class, 'store'])->name('sales.store');
+    Route::get('/sales/{sale}', [SaleController::class, 'show'])->name('sales.show');
 
     // Master data: lihat untuk semua user login, ubah hanya untuk admin.
     // Route admin didaftarkan dulu supaya /products/create tidak tertangkap
