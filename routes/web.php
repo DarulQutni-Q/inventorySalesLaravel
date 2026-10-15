@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -32,7 +33,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
         Route::resource('categories', CategoryController::class)->except(['index']);
         Route::resource('products', ProductController::class)->except(['index', 'show']);
+        Route::resource('suppliers', SupplierController::class)->except(['index']);
     });
     Route::resource('categories', CategoryController::class)->only(['index']);
     Route::resource('products', ProductController::class)->only(['index', 'show']);
+    Route::resource('suppliers', SupplierController::class)->only(['index']);
 });
