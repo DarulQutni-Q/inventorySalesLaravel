@@ -28,9 +28,12 @@ Route::middleware('auth')->group(function () {
     })->name('dashboard');
 
     // Transaksi: staff dan admin boleh membuat dan melihat.
+    // /create didaftarkan sebelum /{purchase} supaya tidak tertangkap
+    // oleh route show.
     Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases.index');
     Route::get('/purchases/create', [PurchaseController::class, 'create'])->name('purchases.create');
     Route::post('/purchases', [PurchaseController::class, 'store'])->name('purchases.store');
+    Route::get('/purchases/{purchase}', [PurchaseController::class, 'show'])->name('purchases.show');
 
     // Master data: lihat untuk semua user login, ubah hanya untuk admin.
     // Route admin didaftarkan dulu supaya /products/create tidak tertangkap

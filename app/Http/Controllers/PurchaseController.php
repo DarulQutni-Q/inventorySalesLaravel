@@ -41,4 +41,11 @@ class PurchaseController extends Controller
         return redirect()->route('purchases.index')
             ->with('success', 'Pembelian ' . $purchase->purchase_number . ' berhasil disimpan.');
     }
+
+    public function show(Purchase $purchase)
+    {
+        $purchase->load(['supplier', 'user', 'items.product']);
+
+        return view('purchases.show', compact('purchase'));
+    }
 }

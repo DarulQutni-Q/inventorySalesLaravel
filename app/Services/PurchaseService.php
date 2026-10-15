@@ -18,7 +18,7 @@ class PurchaseService
             $purchase = Purchase::create([
                 'supplier_id' => $data['supplier_id'],
                 'user_id' => $userId,
-                'purchase_number' => 'PR-' . now()->format('YmdHis'),
+                'purchase_number' => $this->generateNumber(),
                 'total' => 0,
                 'status' => 'completed',
                 'purchased_at' => $data['purchased_at'] ?? now(),
@@ -48,5 +48,22 @@ class PurchaseService
 
             return $purchase;
         });
+    }
+
+    /**
+     * Nomor transaksi format PR-YYYYMMDD-XXXX, urut per hari.
+     * Unik karena kolom purchase_number punya unique constraint.
+     */
+    private function generateNumber(): string
+    {
+        $date = now()->format('Ymd');
+
+        $last = Purchase::where('purchase_number', 'like', "PR-{$date}-%")
+            ->orderByDesc('purchase_number')
+            ->value('purchase_number');
+
+        $seq = $last ? (int) substr($last, -4) + 1 : 1;
+
+        return sprintf('PR-%s-%04d', $date, $seq);
     }
 }

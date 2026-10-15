@@ -23,7 +23,7 @@
         <tbody>
             @forelse ($purchases as $purchase)
                 <tr>
-                    <td>{{ $purchase->purchase_number }}</td>
+                    <td><a href="{{ route('purchases.show', $purchase) }}">{{ $purchase->purchase_number }}</a></td>
                     <td>{{ $purchase->purchased_at->format('d M Y H:i') }}</td>
                     <td>{{ $purchase->supplier->name }}</td>
                     <td>{{ $purchase->user->name }}</td>
