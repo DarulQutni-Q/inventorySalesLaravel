@@ -3,24 +3,30 @@
 Aplikasi web untuk mengelola inventaris dan penjualan usaha distribusi kecil.
 Stok produk terupdate otomatis setiap ada transaksi pembelian atau penjualan.
 
-Dibangun dengan Laravel dan MySQL.
+Dibangun dengan Laravel dan MySQL/MariaDB. Tampilan memakai CSS polos
+(tanpa build step JavaScript).
 
 ## Fitur
 
 - Login dengan hak akses berbeda (admin dan staff)
 - Data master: kategori, produk (SKU unik), supplier
-- Transaksi pembelian: stok bertambah otomatis
-- Transaksi penjualan: stok berkurang otomatis, transaksi ditolak kalau stok kurang
+- Transaksi pembelian multi-item: stok bertambah otomatis, nomor transaksi
+  unik format PR-YYYYMMDD-XXXX
+- Transaksi penjualan multi-item: stok berkurang otomatis, nomor transaksi
+  unik format SL-YYYYMMDD-XXXX
 - Pembatalan transaksi oleh admin (stok dipulihkan)
-- Dashboard ringkasan penjualan dan daftar produk stok rendah
-- Pencarian produk, filter tanggal transaksi, pagination
+- Dashboard: kartu ringkasan, grafik penjualan 7 hari, produk terlaris,
+  transaksi terbaru
+- Laporan stok rendah (batas bisa diubah) dan laporan transaksi dengan
+  filter tanggal
+- Kelola user (admin): tambah, ubah, hapus, atur role
+- Pencarian produk, filter kategori, pagination
 
 ## Syarat
 
 - PHP 8.2+
 - Composer
 - MySQL 8 / MariaDB
-- Node.js dan npm (untuk build asset)
 
 ## Cara instalasi
 
@@ -40,15 +46,13 @@ DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=inventory_sales
 DB_USERNAME=root
-DB_PASSWORD=
+DB_PASSWORD=<redacted>
 ```
 
 Lanjutkan:
 
 ```bash
 php artisan migrate --seed
-npm install
-npm run build
 php artisan serve
 ```
 
@@ -64,10 +68,18 @@ Buka http://127.0.0.1:8000 di browser.
 ## Aturan bisnis
 
 - SKU produk harus unik.
-- Penjualan tidak bisa melebihi stok yang tersedia.
-- Total transaksi selalu dihitung di server, bukan dari input browser.
-- Header transaksi, item, dan perubahan stok disimpan dalam satu database transaction. Kalau satu item gagal, semuanya batal.
-- Produk yang sudah pernah ditransaksikan tidak bisa dihapus permanen.
+- Penjualan tidak bisa melebihi stok yang tersedia. Kalau satu item kurang,
+  seluruh transaksi ditolak tanpa perubahan data.
+- Total dan subtotal transaksi selalu dihitung di server dari harga di
+  database, bukan dari input browser.
+- Header transaksi, item, dan perubahan stok disimpan dalam satu database
+  transaction. Kalau satu item gagal, semuanya batal (rollback).
+- Baris produk dikunci (`lockForUpdate`) selama transaksi penjualan berjalan
+  supaya dua penjualan bersamaan tidak menjual stok yang sama.
+- Produk yang sudah pernah ditransaksikan tidak bisa dihapus (foreign key
+  restrict); hapus kategori/supplier yang dipakai produk juga ditolak.
+- Hanya admin yang bisa mengubah data master, membatalkan transaksi, dan
+  mengelola user.
 
 ## Keterbatasan
 
