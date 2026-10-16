@@ -54,6 +54,12 @@
             @if (Route::has('sales.index'))
                 <a href="{{ route('sales.index') }}">Penjualan</a>
             @endif
+            @if (Route::has('reports.low-stock'))
+                <a href="{{ route('reports.low-stock') }}">Stok Rendah</a>
+            @endif
+            @if (Route::has('reports.transactions'))
+                <a href="{{ route('reports.transactions') }}">Laporan</a>
+            @endif
             <span class="user">
                 {{ auth()->user()->name }} ({{ auth()->user()->role }})
                 <form action="{{ route('logout') }}" method="POST" style="display:inline">

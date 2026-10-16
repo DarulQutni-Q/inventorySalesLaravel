@@ -6,6 +6,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
@@ -38,6 +39,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/sales/create', [SaleController::class, 'create'])->name('sales.create');
     Route::post('/sales', [SaleController::class, 'store'])->name('sales.store');
     Route::get('/sales/{sale}', [SaleController::class, 'show'])->name('sales.show');
+
+    // Laporan: boleh diakses staff dan admin.
+    Route::get('/reports/low-stock', [ReportController::class, 'lowStock'])->name('reports.low-stock');
+    Route::get('/reports/transactions', [ReportController::class, 'transactions'])->name('reports.transactions');
 
     // Master data: lihat untuk semua user login, ubah hanya untuk admin.
     // Route admin didaftarkan dulu supaya /products/create tidak tertangkap
