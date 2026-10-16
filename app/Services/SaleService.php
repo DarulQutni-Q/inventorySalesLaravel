@@ -22,7 +22,10 @@ class SaleService
             $checked = [];
             $errors = [];
             foreach ($data['items'] as $item) {
-                $product = Product::findOrFail($item['product_id']);
+                // lockForUpdate mengunci baris produk selama transaction berjalan.
+                // Tanpa ini, dua penjualan yang jalan hampir bersamaan bisa
+                // membaca stok yang sama dan menjual melebihi stok (oversell).
+                $product = Product::lockForUpdate()->findOrFail($item['product_id']);
                 $qty = (int) $item['quantity'];
 
                 if ($qty < 1 || $product->stock < $qty) {
