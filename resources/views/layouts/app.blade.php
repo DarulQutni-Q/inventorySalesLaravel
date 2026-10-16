@@ -60,6 +60,9 @@
             @if (Route::has('reports.transactions'))
                 <a href="{{ route('reports.transactions') }}">Laporan</a>
             @endif
+            @if (auth()->user()->isAdmin() && Route::has('users.index'))
+                <a href="{{ route('users.index') }}">User</a>
+            @endif
             <span class="user">
                 {{ auth()->user()->name }} ({{ auth()->user()->role }})
                 <form action="{{ route('logout') }}" method="POST" style="display:inline">
