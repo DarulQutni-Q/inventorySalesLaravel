@@ -34,6 +34,12 @@
     </table>
     <div style="margin-top: 16px;">
         <a href="{{ route('sales.index') }}" class="btn btn-secondary">Kembali</a>
+        @if (auth()->user()->isAdmin() && $sale->status === 'completed')
+            <form action="{{ route('sales.cancel', $sale) }}" method="POST" style="display:inline" onsubmit="return confirm('Batalkan penjualan ini? Stok akan dikembalikan.')">
+                @csrf
+                <button type="submit" class="btn btn-danger">Batalkan Transaksi</button>
+            </form>
+        @endif
     </div>
 </div>
 @endsection

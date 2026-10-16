@@ -49,6 +49,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('categories', CategoryController::class)->except(['index']);
         Route::resource('products', ProductController::class)->except(['index', 'show']);
         Route::resource('suppliers', SupplierController::class)->except(['index']);
+        Route::post('/purchases/{purchase}/cancel', [PurchaseController::class, 'cancel'])->name('purchases.cancel');
+        Route::post('/sales/{sale}/cancel', [SaleController::class, 'cancel'])->name('sales.cancel');
     });
     Route::resource('categories', CategoryController::class)->only(['index']);
     Route::resource('products', ProductController::class)->only(['index', 'show']);

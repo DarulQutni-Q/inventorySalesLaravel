@@ -6,6 +6,7 @@ use App\Http\Requests\SaleRequest;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Services\SaleService;
+use Illuminate\Validation\ValidationException;
 
 class SaleController extends Controller
 {
@@ -46,5 +47,18 @@ class SaleController extends Controller
         $sale->load(['user', 'items.product']);
 
         return view('sales.show', compact('sale'));
+    }
+
+    public function cancel(Sale $sale, SaleService $service)
+    {
+        try {
+            $service->cancel($sale);
+        } catch (ValidationException $e) {
+            return redirect()->route('sales.show', $sale)
+                ->with('error', collect($e->errors())->flatten()->first());
+        }
+
+        return redirect()->route('sales.show', $sale)
+            ->with('success', 'Penjualan dibatalkan, stok dikembalikan.');
     }
 }

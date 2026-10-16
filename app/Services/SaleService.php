@@ -70,6 +70,28 @@ class SaleService
     }
 
     /**
+     * Batalkan penjualan: stok yang dulu berkurang ditambah kembali.
+     * Hanya untuk transaksi yang masih berstatus completed.
+     */
+    public function cancel(Sale $sale): void
+    {
+        if ($sale->status !== 'completed') {
+            throw ValidationException::withMessages([
+                'transaksi' => 'Transaksi ini sudah dibatalkan sebelumnya.',
+            ]);
+        }
+
+        DB::transaction(function () use ($sale) {
+            foreach ($sale->items as $item) {
+                Product::where('id', $item->product_id)
+                    ->increment('stock', $item->quantity);
+            }
+
+            $sale->update(['status' => 'cancelled']);
+        });
+    }
+
+    /**
      * Nomor transaksi format SL-YYYYMMDD-XXXX, urut per hari.
      */
     private function generateNumber(): string

@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Supplier;
 use App\Services\PurchaseService;
+use Illuminate\Validation\ValidationException;
 
 class PurchaseController extends Controller
 {
@@ -47,5 +48,18 @@ class PurchaseController extends Controller
         $purchase->load(['supplier', 'user', 'items.product']);
 
         return view('purchases.show', compact('purchase'));
+    }
+
+    public function cancel(Purchase $purchase, PurchaseService $service)
+    {
+        try {
+            $service->cancel($purchase);
+        } catch (ValidationException $e) {
+            return redirect()->route('purchases.show', $purchase)
+                ->with('error', collect($e->errors())->flatten()->first());
+        }
+
+        return redirect()->route('purchases.show', $purchase)
+            ->with('success', 'Pembelian dibatalkan, stok dikembalikan.');
     }
 }

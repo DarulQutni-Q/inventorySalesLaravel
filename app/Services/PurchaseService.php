@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Product;
 use App\Models\Purchase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class PurchaseService
 {
@@ -47,6 +48,28 @@ class PurchaseService
             $purchase->update(['total' => $total]);
 
             return $purchase;
+        });
+    }
+
+    /**
+     * Batalkan pembelian: stok yang dulu bertambah dikurangi kembali.
+     * Hanya untuk transaksi yang masih berstatus completed.
+     */
+    public function cancel(Purchase $purchase): void
+    {
+        if ($purchase->status !== 'completed') {
+            throw ValidationException::withMessages([
+                'transaksi' => 'Transaksi ini sudah dibatalkan sebelumnya.',
+            ]);
+        }
+
+        DB::transaction(function () use ($purchase) {
+            foreach ($purchase->items as $item) {
+                Product::where('id', $item->product_id)
+                    ->decrement('stock', $item->quantity);
+            }
+
+            $purchase->update(['status' => 'cancelled']);
         });
     }
 
