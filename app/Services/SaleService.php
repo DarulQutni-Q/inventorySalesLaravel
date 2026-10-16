@@ -17,6 +17,26 @@ class SaleService
     public function create(array $data, int $userId): Sale
     {
         return DB::transaction(function () use ($data, $userId) {
+            // Fase 1: periksa stok SEMUA item dulu. Kalau ada satu saja yang
+            // kurang, seluruh transaksi ditolak sebelum ada data yang berubah.
+            $checked = [];
+            $errors = [];
+            foreach ($data['items'] as $item) {
+                $product = Product::findOrFail($item['product_id']);
+                $qty = (int) $item['quantity'];
+
+                if ($qty < 1 || $product->stock < $qty) {
+                    $errors[] = "Stok {$product->name} tidak cukup (tersedia {$product->stock}, diminta {$qty}).";
+                }
+
+                $checked[] = [$product, $qty];
+            }
+
+            if ($errors) {
+                throw ValidationException::withMessages(['items' => $errors]);
+            }
+
+            // Fase 2: semua item valid, simpan header, item, dan kurangi stok.
             $sale = Sale::create([
                 'user_id' => $userId,
                 'sale_number' => $this->generateNumber(),
@@ -26,18 +46,7 @@ class SaleService
             ]);
 
             $total = 0;
-            foreach ($data['items'] as $item) {
-                $product = Product::findOrFail($item['product_id']);
-                $qty = (int) $item['quantity'];
-
-                // Stok dicek sebelum dikurangi. Kalau satu item tidak cukup,
-                // seluruh transaksi dibatalkan (exception = rollback).
-                if ($qty < 1 || $product->stock < $qty) {
-                    throw ValidationException::withMessages([
-                        'items' => "Stok {$product->name} tidak cukup (tersedia {$product->stock}, diminta {$qty}).",
-                    ]);
-                }
-
+            foreach ($checked as [$product, $qty]) {
                 $subtotal = $product->selling_price * $qty;
 
                 $sale->items()->create([
