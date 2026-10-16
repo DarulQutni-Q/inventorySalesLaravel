@@ -3,12 +3,15 @@
 @section('title', 'Buat Pembelian')
 
 @section('content')
-<h1>Buat Pembelian</h1>
+<div class="page-head">
+    <h1>Buat Pembelian</h1>
+</div>
+
 <div class="card">
     <form method="POST" action="{{ route('purchases.store') }}" id="purchase-form">
         @csrf
-        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 240px;">
+        <div class="form-row">
+            <div>
                 <label for="supplier_id">Supplier</label>
                 <select id="supplier_id" name="supplier_id" required>
                     <option value="">Pilih supplier</option>
@@ -18,25 +21,27 @@
                 </select>
                 @error('supplier_id')<div class="error-text">{{ $message }}</div>@enderror
             </div>
-            <div style="flex: 1; min-width: 240px;">
+            <div>
                 <label for="purchased_at">Tanggal Pembelian</label>
                 <input type="datetime-local" id="purchased_at" name="purchased_at" value="{{ old('purchased_at', now()->format('Y-m-d\TH:i')) }}">
                 @error('purchased_at')<div class="error-text">{{ $message }}</div>@enderror
             </div>
         </div>
 
-        <h2 style="margin-top: 20px;">Item Produk</h2>
+        <h2 style="margin-top: 24px;">Item Produk</h2>
         @error('items')<div class="error-text">{{ $message }}</div>@enderror
-        <table id="items-table">
-            <thead>
-                <tr><th>Produk</th><th>Qty</th><th>Harga Beli (Rp)</th><th></th></tr>
-            </thead>
-            <tbody id="items-body">
-            </tbody>
-        </table>
-        <button type="button" class="btn btn-secondary" id="add-item" style="margin-top: 8px;">Tambah Baris</button>
+        <div class="table-wrap">
+            <table id="items-table">
+                <thead>
+                    <tr><th>Produk</th><th style="width: 110px;">Qty</th><th style="width: 170px;">Harga Beli (Rp)</th><th style="width: 90px;"></th></tr>
+                </thead>
+                <tbody id="items-body">
+                </tbody>
+            </table>
+        </div>
+        <button type="button" class="btn btn-secondary" id="add-item" style="margin-top: 10px;">Tambah Baris</button>
 
-        <div style="margin-top: 20px;">
+        <div class="form-actions">
             <button type="submit" class="btn btn-primary">Simpan Pembelian</button>
             <a href="{{ route('purchases.index') }}" class="btn btn-secondary">Batal</a>
         </div>
@@ -59,9 +64,9 @@ function addRow(productId = '', qty = 1, price = '') {
     const tr = document.createElement('tr');
     tr.innerHTML = `
         <td><select name="items[${rowIndex}][product_id]" required>${productOptions(productId)}</select></td>
-        <td><input type="number" name="items[${rowIndex}][quantity]" value="${qty}" min="1" required style="width: 90px;"></td>
-        <td><input type="number" name="items[${rowIndex}][unit_cost]" value="${price}" min="0" step="0.01" required style="width: 140px;"></td>
-        <td><button type="button" class="btn btn-danger remove-row">Hapus</button></td>
+        <td><input type="number" name="items[${rowIndex}][quantity]" value="${qty}" min="1" required></td>
+        <td><input type="number" name="items[${rowIndex}][unit_cost]" value="${price}" min="0" step="0.01" required></td>
+        <td><button type="button" class="btn btn-danger btn-sm remove-row">Hapus</button></td>
     `;
     // Isi harga beli otomatis dari data produk saat produk dipilih.
     tr.querySelector('select').addEventListener('change', function () {

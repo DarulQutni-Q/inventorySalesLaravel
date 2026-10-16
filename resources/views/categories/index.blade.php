@@ -3,7 +3,7 @@
 @section('title', 'Kategori')
 
 @section('content')
-<div class="toolbar">
+<div class="page-head">
     <h1>Kategori</h1>
     @if (auth()->user()->isAdmin())
         <a href="{{ route('categories.create') }}" class="btn btn-primary">Tambah Kategori</a>
@@ -11,37 +11,41 @@
 </div>
 
 <div class="card">
-    <table>
-        <thead>
-            <tr>
-                <th>Nama</th>
-                <th>Jumlah Produk</th>
-                @if (auth()->user()->isAdmin())
-                    <th>Aksi</th>
-                @endif
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($categories as $category)
+    <div class="table-wrap">
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ $category->name }}</td>
-                    <td>{{ $category->products_count }}</td>
+                    <th>Nama</th>
+                    <th>Jumlah Produk</th>
                     @if (auth()->user()->isAdmin())
-                        <td>
-                            <a href="{{ route('categories.edit', $category) }}" class="btn btn-secondary">Ubah</a>
-                            <form action="{{ route('categories.destroy', $category) }}" method="POST" style="display:inline" onsubmit="return confirm('Hapus kategori ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger">Hapus</button>
-                            </form>
-                        </td>
+                        <th>Aksi</th>
                     @endif
                 </tr>
-            @empty
-                <tr><td colspan="3">Belum ada kategori.</td></tr>
-            @endforelse
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @forelse ($categories as $category)
+                    <tr>
+                        <td>{{ $category->name }}</td>
+                        <td>{{ $category->products_count }}</td>
+                        @if (auth()->user()->isAdmin())
+                            <td>
+                                <div class="actions">
+                                    <a href="{{ route('categories.edit', $category) }}" class="btn btn-secondary btn-sm">Ubah</a>
+                                    <form action="{{ route('categories.destroy', $category) }}" method="POST" onsubmit="return confirm('Hapus kategori ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                    </form>
+                                </div>
+                            </td>
+                        @endif
+                    </tr>
+                @empty
+                    <tr><td colspan="3" class="empty">Belum ada kategori.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
     <div class="pagination">{{ $categories->links() }}</div>
 </div>
 @endsection

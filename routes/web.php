@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
@@ -12,10 +11,15 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
+// Halaman awal: admin ke dashboard, staff ke daftar produk.
 Route::get('/', function () {
-    return auth()->check()
-        ? view('home')
-        : redirect()->route('login');
+    if (!auth()->check()) {
+        return redirect()->route('login');
+    }
+
+    return auth()->user()->isAdmin()
+        ? redirect()->route('dashboard')
+        : redirect()->route('products.index');
 });
 
 Route::middleware('guest')->group(function () {
@@ -25,8 +29,6 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Transaksi: staff dan admin boleh membuat dan melihat.
     // /create didaftarkan sebelum /{id} supaya tidak tertangkap
@@ -41,15 +43,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/sales', [SaleController::class, 'store'])->name('sales.store');
     Route::get('/sales/{sale}', [SaleController::class, 'show'])->name('sales.show');
 
-    // Laporan: boleh diakses staff dan admin.
-    Route::get('/reports/low-stock', [ReportController::class, 'lowStock'])->name('reports.low-stock');
-    Route::get('/reports/transactions', [ReportController::class, 'transactions'])->name('reports.transactions');
-
     // Master data: lihat untuk semua user login, ubah hanya untuk admin.
     // Route admin didaftarkan dulu supaya /products/create tidak tertangkap
     // oleh /products/{product} (route show yang didaftarkan setelahnya).
     Route::middleware('admin')->group(function () {
-        Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+        // Dashboard dan laporan hanya untuk admin.
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/reports/low-stock', [ReportController::class, 'lowStock'])->name('reports.low-stock');
+        Route::get('/reports/transactions', [ReportController::class, 'transactions'])->name('reports.transactions');
+
         Route::resource('categories', CategoryController::class)->except(['index']);
         Route::resource('products', ProductController::class)->except(['index', 'show']);
         Route::resource('suppliers', SupplierController::class)->except(['index']);

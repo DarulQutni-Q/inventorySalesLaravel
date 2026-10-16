@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SaleRequest;
+use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Services\SaleService;
@@ -10,13 +11,24 @@ use Illuminate\Validation\ValidationException;
 
 class SaleController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $sales = Sale::with('user')
-            ->latest('sold_at')
-            ->paginate(10);
+        // Filter tanggal dan status divalidasi dulu supaya query tetap aman.
+        $filter = $request->validate([
+            'dari' => ['nullable', 'date'],
+            'sampai' => ['nullable', 'date', 'after_or_equal:dari'],
+            'status' => ['nullable', 'in:completed,cancelled'],
+        ]);
 
-        return view('sales.index', compact('sales'));
+        $sales = Sale::with('user')
+            ->when($filter['dari'] ?? null, fn ($q, $dari) => $q->whereDate('sold_at', '>=', $dari))
+            ->when($filter['sampai'] ?? null, fn ($q, $sampai) => $q->whereDate('sold_at', '<=', $sampai))
+            ->when($filter['status'] ?? null, fn ($q, $status) => $q->where('status', $status))
+            ->latest('sold_at')
+            ->paginate(10)
+            ->withQueryString(); // filter tetap ada saat pindah halaman
+
+        return view('sales.index', compact('sales', 'filter'));
     }
 
     public function create()

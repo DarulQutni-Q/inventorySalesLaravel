@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PurchaseRequest;
+use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Supplier;
@@ -11,13 +12,24 @@ use Illuminate\Validation\ValidationException;
 
 class PurchaseController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $purchases = Purchase::with(['supplier', 'user'])
-            ->latest('purchased_at')
-            ->paginate(10);
+        // Filter tanggal dan status divalidasi dulu supaya query tetap aman.
+        $filter = $request->validate([
+            'dari' => ['nullable', 'date'],
+            'sampai' => ['nullable', 'date', 'after_or_equal:dari'],
+            'status' => ['nullable', 'in:completed,cancelled'],
+        ]);
 
-        return view('purchases.index', compact('purchases'));
+        $purchases = Purchase::with(['supplier', 'user'])
+            ->when($filter['dari'] ?? null, fn ($q, $dari) => $q->whereDate('purchased_at', '>=', $dari))
+            ->when($filter['sampai'] ?? null, fn ($q, $sampai) => $q->whereDate('purchased_at', '<=', $sampai))
+            ->when($filter['status'] ?? null, fn ($q, $status) => $q->where('status', $status))
+            ->latest('purchased_at')
+            ->paginate(10)
+            ->withQueryString(); // filter tetap ada saat pindah halaman
+
+        return view('purchases.index', compact('purchases', 'filter'));
     }
 
     public function create()

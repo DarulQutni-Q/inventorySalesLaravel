@@ -1,29 +1,32 @@
-@extends('layouts.app')
+@extends('layouts.guest')
 
-@section('title', 'Login')
+@section('title', 'Masuk')
 
 @section('content')
-<div class="card" style="max-width: 420px; margin: 40px auto;">
-    <h2>Login</h2>
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus>
-        @error('email')<div class="error-text">{{ $message }}</div>@enderror
+<h1>Masuk</h1>
+<p class="sub">Kelola stok dan transaksi tokomu.</p>
 
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required>
-        @error('password')<div class="error-text">{{ $message }}</div>@enderror
+@if ($errors->has('email'))
+    <div class="alert-error">{{ $errors->first('email') }}</div>
+@endif
 
-        <label style="margin-top: 12px;">
-            <input type="checkbox" name="remember"> Ingat saya
-        </label>
+<form method="POST" action="{{ route('login') }}">
+    @csrf
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="email">
 
-        <button type="submit" class="btn btn-primary" style="margin-top: 16px; width: 100%;">Masuk</button>
-    </form>
-    <p style="font-size: 13px; color: #666; margin-top: 16px;">
-        Akun demo: admin@inventory.test / password (admin),
-        staff@inventory.test / password (staff)
-    </p>
-</div>
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" required autocomplete="current-password">
+
+    <label class="remember">
+        <input type="checkbox" name="remember"> Ingat saya
+    </label>
+
+    <button type="submit" class="btn">Masuk</button>
+</form>
+
+<p class="demo">
+    Akun demo: <code>admin@inventory.test</code> / <code>password</code> (admin)<br>
+    <code>staff@inventory.test</code> / <code>password</code> (staff)
+</p>
 @endsection
