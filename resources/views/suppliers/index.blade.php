@@ -18,7 +18,7 @@
                     <th>Nama</th>
                     <th>Telepon</th>
                     <th>Email</th>
-                    <th>Jml Pembelian</th>
+                    <th>Alamat</th>
                     @if (auth()->user()->isAdmin())
                         <th>Aksi</th>
                     @endif
@@ -30,7 +30,7 @@
                         <td>{{ $supplier->name }}</td>
                         <td>{{ $supplier->phone ?? '-' }}</td>
                         <td>{{ $supplier->email ?? '-' }}</td>
-                        <td>{{ $supplier->purchases_count }}</td>
+                        <td>{{ $supplier->address ?? '-' }}</td>
                         @if (auth()->user()->isAdmin())
                             <td>
                                 <div class="actions">

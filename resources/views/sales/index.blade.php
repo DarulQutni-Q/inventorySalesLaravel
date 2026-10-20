@@ -5,7 +5,7 @@
 @section('content')
 <div class="page-head">
     <h1>Penjualan</h1>
-    <a href="{{ route('sales.create') }}" class="btn btn-primary">Buat Penjualan</a>
+    <a href="{{ route('sales.create') }}" class="btn btn-primary">+ Tambah Penjualan</a>
 </div>
 
 <div class="card">
@@ -37,28 +37,43 @@
         <table>
             <thead>
                 <tr>
-                    <th>No. Transaksi</th>
-                    <th>Tanggal</th>
-                    <th>Oleh</th>
-                    <th>Total</th>
-                    <th>Status</th>
+                    <th>NO</th>
+                    <th>NO FAKTUR</th>
+                    <th>TANGGAL</th>
+                    <th>OLEH</th>
+                    <th>TOTAL ITEM</th>
+                    <th>TOTAL HARGA</th>
+                    <th>STATUS</th>
+                    <th>AKSI</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse ($sales as $sale)
+                @forelse ($sales as $i => $sale)
                     <tr>
+                        <td>{{ $sales->firstItem() + $i }}</td>
                         <td><a href="{{ route('sales.show', $sale) }}">{{ $sale->sale_number }}</a></td>
-                        <td>{{ $sale->sold_at->format('d M Y H:i') }}</td>
+                        <td>{{ $sale->sold_at->format('d/m/Y') }}</td>
                         <td>{{ $sale->user->name }}</td>
+                        <td>{{ $sale->items_count }}</td>
                         <td>Rp {{ number_format($sale->total, 0, ',', '.') }}</td>
                         <td>
                             <span class="badge {{ $sale->status === 'completed' ? 'badge-done' : 'badge-cancel' }}">
                                 {{ $sale->status === 'completed' ? 'Selesai' : 'Dibatalkan' }}
                             </span>
                         </td>
+                        <td>
+                            <a href="{{ route('sales.show', $sale) }}" class="btn btn-secondary btn-sm">Detail</a>
+                            @if (auth()->user()->isAdmin() && $sale->status === 'completed')
+                                <form action="{{ route('sales.cancel', $sale) }}" method="POST" style="display:inline"
+                                      onsubmit="return confirm('Batalkan transaksi ini? Stok akan dikembalikan.')">
+                                    @csrf
+                                    <button type="submit" class="btn btn-danger btn-sm">Batal</button>
+                                </form>
+                            @endif
+                        </td>
                     </tr>
                 @empty
-                    <tr><td colspan="5" class="empty">Tidak ada transaksi penjualan yang cocok.</td></tr>
+                    <tr><td colspan="8" class="empty">Tidak ada transaksi penjualan yang cocok.</td></tr>
                 @endforelse
             </tbody>
         </table>

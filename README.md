@@ -1,34 +1,88 @@
-# Inventory & Sales Management System
+# CRMEdge — Inventory & Sales Management
 
-Aplikasi web untuk mengelola inventaris dan penjualan usaha distribusi kecil.
-Stok produk terupdate otomatis setiap ada transaksi pembelian atau penjualan.
+## Overview
 
-Dibangun dengan Laravel dan MySQL/MariaDB. Tampilan memakai CSS polos
-(tanpa build step JavaScript).
+Laravel-based inventory and sales management system with role-based access control, atomic stock consistency, and a modern CRMEdge UI. Supports multi-item purchase (stock-in) and sale (stock-out) transactions with automatic number generation, low-stock alerts, and a transaction report dashboard.
 
-## Fitur
+## Tech Stack
 
-- Login dengan hak akses berbeda (admin dan staff)
-- Data master: kategori, produk (SKU unik), supplier
-- Transaksi pembelian multi-item: stok bertambah otomatis, nomor transaksi
-  unik format PR-YYYYMMDD-XXXX
-- Transaksi penjualan multi-item: stok berkurang otomatis, nomor transaksi
-  unik format SL-YYYYMMDD-XXXX
-- Pembatalan transaksi oleh admin (stok dipulihkan)
-- Dashboard: kartu ringkasan, grafik penjualan 7 hari, produk terlaris,
-  transaksi terbaru
-- Laporan stok rendah (batas bisa diubah) dan laporan transaksi dengan
-  filter tanggal
-- Kelola user (admin): tambah, ubah, hapus, atur role
-- Pencarian produk, filter kategori, pagination
+- **Laravel 11** · PHP 8.2+ · Blade templates
+- **MySQL 8** / MariaDB
+- **CSS** — pure embedded design system (CRMEdge UI, no Tailwind CDN)
 
-## Syarat
+---
 
-- PHP 8.2+
+## ERD (Entity Relationship Diagram)
+
+```
+users
+  id PK
+  name
+  email  UNIQUE
+  password
+  role   ENUM(admin, staff)
+
+categories
+  id PK
+  name
+
+suppliers
+  id PK
+  name · phone · email · address
+
+products
+  id PK
+  category_id FK → categories.id
+  sku  UNIQUE
+  name
+  purchase_price · selling_price
+  stock · minimum_stock
+
+purchases                       purchase_items
+  id PK                           id PK
+  purchase_number  UNIQUE         purchase_id FK → purchases.id
+  supplier_id FK → suppliers.id  product_id  FK → products.id
+  user_id     FK → users.id       quantity · unit_cost · subtotal
+  total
+  status ENUM(completed,cancelled)
+  purchased_at
+
+sales                           sale_items
+  id PK                           id PK
+  sale_number  UNIQUE             sale_id     FK → sales.id
+  user_id FK → users.id           product_id  FK → products.id
+  total                           quantity · unit_price · subtotal
+  status ENUM(completed,cancelled)
+  sold_at
+```
+
+---
+
+## Features
+
+- **Role-based access** — Admin: full access; Staff: sales only (no user management, no reports)
+- **Product management** — SKU, category, stock level, minimum stock threshold, pricing
+- **Purchase / stock-in** — BM-YYYYMMDD-XXXX numbering, multi-item, auto stock increment, cancellation with stock restore
+- **Sales / stock-out** — SL-YYYYMMDD-XXXX numbering, multi-item, stock validated with `lockForUpdate()`, auto stock decrement, cancellation with stock restore
+- **Atomic transactions** — `DB::transaction` guarantees all-or-nothing for every purchase and sale
+- **Dashboard** — today's sales revenue, monthly revenue, top-selling products, recent transactions
+- **Low-stock report** — configurable threshold, sorted by most critical
+- **Transaction report** — date-range filter for both purchases and sales
+- **Search & pagination** — products and transactions are searchable and paginated
+- **Modern CRMEdge UI** — white cards, lime accent, slate-900 primary, clean sidebar
+
+---
+
+## Requirements
+
+- PHP >= 8.2
 - Composer
-- MySQL 8 / MariaDB
+- MySQL 8 or MariaDB
+- Node.js + npm (for asset compilation)
 
-## Cara instalasi
+---
+
+## Installation
 
 ```bash
 git clone https://github.com/DarulQutni-Q/inventorySalesRaravel.git
@@ -38,51 +92,69 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-Atur koneksi database di `.env`:
+Configure your database in `.env`:
 
-```
+```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=inventory_sales
 DB_USERNAME=root
-DB_PASSWORD=<redacted>
+DB_PASSWORD=
 ```
-
-Lanjutkan:
 
 ```bash
 php artisan migrate --seed
+npm install && npm run build
 php artisan serve
 ```
 
-Buka http://127.0.0.1:8000 di browser.
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
 
-## Akun demo
+---
 
-| Role  | Email              | Password |
-|-------|--------------------|----------|
-| Admin | admin@inventory.test | password |
-| Staff | staff@inventory.test | password |
+## Demo Accounts
 
-## Aturan bisnis
+| Role  | Email               | Password |
+|-------|---------------------|----------|
+| Admin | admin@example.com   | password |
+| Staff | staff@example.com   | password |
 
-- SKU produk harus unik.
-- Penjualan tidak bisa melebihi stok yang tersedia. Kalau satu item kurang,
-  seluruh transaksi ditolak tanpa perubahan data.
-- Total dan subtotal transaksi selalu dihitung di server dari harga di
-  database, bukan dari input browser.
-- Header transaksi, item, dan perubahan stok disimpan dalam satu database
-  transaction. Kalau satu item gagal, semuanya batal (rollback).
-- Baris produk dikunci (`lockForUpdate`) selama transaksi penjualan berjalan
-  supaya dua penjualan bersamaan tidak menjual stok yang sama.
-- Produk yang sudah pernah ditransaksikan tidak bisa dihapus (foreign key
-  restrict); hapus kategori/supplier yang dipakai produk juga ditolak.
-- Hanya admin yang bisa mengubah data master, membatalkan transaksi, dan
-  mengelola user.
+> Additional accounts seeded by `UserSeeder`: `admin@inventory.test` / `staff@inventory.test` (password: `password`).
 
-## Keterbatasan
+---
 
-- Satu gudang (belum mendukung multi-warehouse).
-- Belum ada payment gateway.
-- Laporan masih ringkas (ringkasan dan filter tanggal).
+## Business Rules
+
+| Rule | Detail |
+|------|--------|
+| Server-side pricing | `selling_price` and `purchase_price` come from the database; client totals are ignored |
+| Stock locking | `Product::lockForUpdate()` prevents overselling under concurrent requests |
+| Atomic save | Every purchase and sale is wrapped in `DB::transaction` — partial saves are impossible |
+| Cancellation | Cancelling a completed transaction restores the exact stock quantities from its items |
+| Low-stock threshold | A product is flagged when `stock <= minimum_stock` |
+
+---
+
+## Running Tests
+
+```bash
+php artisan test
+```
+
+Test files:
+
+| File | Coverage |
+|------|----------|
+| `tests/Feature/PurchaseStoreTest.php` | Purchase creation, BM- prefix, empty-item validation, index display |
+| `tests/Feature/SaleStoreTest.php` | Stock decrement, insufficient-stock rejection, atomicity rollback, SL- prefix |
+| `tests/Feature/AuthTest.php` | Guest redirect, wrong password, staff blocked from admin routes, admin dashboard |
+
+---
+
+## Known Limitations
+
+- Single warehouse only — no multi-location stock
+- No payment gateway integration
+- No multi-currency support
+- No barcode scanning

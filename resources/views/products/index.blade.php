@@ -5,6 +5,7 @@
 @section('content')
 <div class="page-head">
     <h1>Produk</h1>
+    <span style="color:#64748b;font-size:.875rem;margin-top:.25rem;display:block;">Kelola stok dan harga produk</span>
     @if (auth()->user()->isAdmin())
         <a href="{{ route('products.create') }}" class="btn btn-primary">Tambah Produk</a>
     @endif
@@ -38,18 +39,18 @@
                     <th>SKU</th>
                     <th>Nama</th>
                     <th>Kategori</th>
+                    <th>Harga Beli</th>
                     <th>Harga Jual</th>
                     <th>Stok</th>
                     <th>Aksi</th>
-                </tr>
             </thead>
             <tbody>
                 @forelse ($products as $product)
                     <tr>
                         <td>{{ $product->sku }}</td>
                         <td>{{ $product->name }}</td>
-                        <td>{{ $product->category->name }}</td>
-                        <td>Rp {{ number_format($product->selling_price, 0, ',', '.') }}</td>
+                        <td><span style="background:#f1f5f9;color:#334155;border-radius:9999px;padding:.125rem .625rem;font-size:.75rem;display:inline-block;">{{ $product->category->name }}</span></td>
+                        <td>Rp {{ number_format($product->purchase_price, 0, ',', '.') }}</td>
                         <td>
                             {{ $product->stock }}
                             @if ($product->isLowStock())
@@ -71,7 +72,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="empty">Tidak ada produk yang cocok.</td></tr>
+                    <tr><td colspan="7" class="empty">Tidak ada produk yang cocok.</td></tr>
                 @endforelse
             </tbody>
         </table>

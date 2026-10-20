@@ -21,17 +21,18 @@ class SaleController extends Controller
         ]);
 
         $sales = Sale::with('user')
+            ->withCount('items')
             ->when($filter['dari'] ?? null, fn ($q, $dari) => $q->whereDate('sold_at', '>=', $dari))
             ->when($filter['sampai'] ?? null, fn ($q, $sampai) => $q->whereDate('sold_at', '<=', $sampai))
             ->when($filter['status'] ?? null, fn ($q, $status) => $q->where('status', $status))
             ->latest('sold_at')
             ->paginate(10)
-            ->withQueryString(); // filter tetap ada saat pindah halaman
-
+            ->withQueryString();
         return view('sales.index', compact('sales', 'filter'));
+
     }
 
-    public function create()
+    public function create(SaleService $service)
     {
         // Hanya tampilkan produk yang stoknya masih ada.
         $products = Product::where('stock', '>', 0)->orderBy('name')->get();
@@ -43,7 +44,9 @@ class SaleController extends Controller
             'stock' => $p->stock,
         ])->values()->toArray();
 
-        return view('sales.create', compact('products', 'productsJson'));
+        $nextNumber = $service->generateNumber();
+
+        return view('sales.create', compact('products', 'productsJson', 'nextNumber'));
     }
 
     public function store(SaleRequest $request, SaleService $service)

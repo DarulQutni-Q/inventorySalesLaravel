@@ -32,7 +32,7 @@ class PurchaseStoreTest extends TestCase
 
     private function product(): Product
     {
-        $cat = Category::create(['name' => 'Kategori Test']);
+        $cat = Category::firstOrCreate(['name' => 'Kategori Test']);
         return Product::create([
             'category_id'    => $cat->id,
             'sku'            => 'PRD-001',

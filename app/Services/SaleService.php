@@ -94,7 +94,8 @@ class SaleService
     /**
      * Nomor transaksi format SL-YYYYMMDD-XXXX, urut per hari.
      */
-    private function generateNumber(): string
+    // public so SaleController can preview the next number before save.
+    public function generateNumber(): string
     {
         $date = now()->format('Ymd');
 
