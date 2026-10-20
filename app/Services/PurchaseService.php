@@ -74,19 +74,20 @@ class PurchaseService
     }
 
     /**
-     * Nomor transaksi format PR-YYYYMMDD-XXXX, urut per hari.
+     * Nomor transaksi format BM-YYYYMMDD-XXXX, urut per hari.
      * Unik karena kolom purchase_number punya unique constraint.
+     * Public agar controller bisa menampilkan nomor berikutnya di form.
      */
-    private function generateNumber(): string
+    public function generateNumber(): string
     {
         $date = now()->format('Ymd');
 
-        $last = Purchase::where('purchase_number', 'like', "PR-{$date}-%")
+        $last = Purchase::where('purchase_number', 'like', "BM-{$date}-%")
             ->orderByDesc('purchase_number')
             ->value('purchase_number');
 
         $seq = $last ? (int) substr($last, -4) + 1 : 1;
 
-        return sprintf('PR-%s-%04d', $date, $seq);
+        return sprintf('BM-%s-%04d', $date, $seq);
     }
 }

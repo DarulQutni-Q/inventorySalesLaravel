@@ -21,7 +21,7 @@ class PurchaseController extends Controller
             'status' => ['nullable', 'in:completed,cancelled'],
         ]);
 
-        $purchases = Purchase::with(['supplier', 'user'])
+        $purchases = Purchase::with(['supplier', 'user'])->withCount('items')
             ->when($filter['dari'] ?? null, fn ($q, $dari) => $q->whereDate('purchased_at', '>=', $dari))
             ->when($filter['sampai'] ?? null, fn ($q, $sampai) => $q->whereDate('purchased_at', '<=', $sampai))
             ->when($filter['status'] ?? null, fn ($q, $status) => $q->where('status', $status))
@@ -32,19 +32,19 @@ class PurchaseController extends Controller
         return view('purchases.index', compact('purchases', 'filter'));
     }
 
-    public function create()
+    public function create(PurchaseService $service)
     {
         $suppliers = Supplier::orderBy('name')->get();
         $products = Product::orderBy('name')->get();
-        // Dipetakan di controller supaya @json di Blade menerima array polos.
         $productsJson = $products->map(fn ($p) => [
-            'id' => $p->id,
-            'sku' => $p->sku,
-            'name' => $p->name,
+            'id'    => $p->id,
+            'sku'   => $p->sku,
+            'name'  => $p->name,
             'price' => $p->purchase_price,
         ])->values()->toArray();
+        $nextNumber = $service->generateNumber();
 
-        return view('purchases.create', compact('suppliers', 'products', 'productsJson'));
+        return view('purchases.create', compact('suppliers', 'products', 'productsJson', 'nextNumber'));
     }
 
     public function store(PurchaseRequest $request, PurchaseService $service)

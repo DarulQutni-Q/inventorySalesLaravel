@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Pembelian')
+@section('title', 'Barang Masuk')
 
 @section('content')
 <div class="page-head">
-    <h1>Pembelian</h1>
-    <a href="{{ route('purchases.create') }}" class="btn btn-primary">Buat Pembelian</a>
+    <h1>Barang Masuk</h1>
+    <a href="{{ route('purchases.create') }}" class="btn btn-primary">+ Tambah Barang Masuk</a>
 </div>
 
 <div class="card">
@@ -37,30 +37,37 @@
         <table>
             <thead>
                 <tr>
-                    <th>No. Transaksi</th>
-                    <th>Tanggal</th>
-                    <th>Supplier</th>
-                    <th>Oleh</th>
-                    <th>Total</th>
-                    <th>Status</th>
+                    <th>NO</th>
+                    <th>NO FAKTUR</th>
+                    <th>TANGGAL</th>
+                    <th>SUPPLIER</th>
+                    <th>TOTAL ITEM</th>
+                    <th>TOTAL HARGA</th>
+                    <th>AKSI</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse ($purchases as $purchase)
+                @forelse ($purchases as $i => $purchase)
                     <tr>
+                        <td>{{ $purchases->firstItem() + $i }}</td>
                         <td><a href="{{ route('purchases.show', $purchase) }}">{{ $purchase->purchase_number }}</a></td>
-                        <td>{{ $purchase->purchased_at->format('d M Y H:i') }}</td>
+                        <td>{{ $purchase->purchased_at->format('d/m/Y') }}</td>
                         <td>{{ $purchase->supplier->name }}</td>
-                        <td>{{ $purchase->user->name }}</td>
+                        <td>{{ $purchase->items_count }}</td>
                         <td>Rp {{ number_format($purchase->total, 0, ',', '.') }}</td>
                         <td>
-                            <span class="badge {{ $purchase->status === 'completed' ? 'badge-done' : 'badge-cancel' }}">
-                                {{ $purchase->status === 'completed' ? 'Selesai' : 'Dibatalkan' }}
-                            </span>
+                            <a href="{{ route('purchases.show', $purchase) }}" class="btn btn-secondary btn-sm">Detail</a>
+                            @if (auth()->user()->isAdmin() && $purchase->status === 'completed')
+                                <form action="{{ route('purchases.cancel', $purchase) }}" method="POST" style="display:inline"
+                                      onsubmit="return confirm('Batalkan transaksi ini? Stok akan dikembalikan.')">
+                                    @csrf
+                                    <button type="submit" class="btn btn-danger btn-sm">Batal</button>
+                                </form>
+                            @endif
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="empty">Tidak ada transaksi pembelian yang cocok.</td></tr>
+                    <tr><td colspan="7" class="empty">Tidak ada transaksi barang masuk.</td></tr>
                 @endforelse
             </tbody>
         </table>
