@@ -51,6 +51,7 @@
                         <td>{{ $product->name }}</td>
                         <td><span style="background:#f1f5f9;color:#334155;border-radius:9999px;padding:.125rem .625rem;font-size:.75rem;display:inline-block;">{{ $product->category->name }}</span></td>
                         <td>Rp {{ number_format($product->purchase_price, 0, ',', '.') }}</td>
+                        <td>Rp {{ number_format($product->selling_price, 0, ',', '.') }}</td>
                         <td>
                             {{ $product->stock }}
                             @if ($product->isLowStock())

@@ -106,7 +106,7 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        $latestSales     = Sale::with('user')->latest('sold_at')->limit(5)->get();
+        $latestSales     = Sale::with('user')->withCount('items')->latest('sold_at')->limit(5)->get();
         $latestPurchases = Purchase::with('supplier')->latest('purchased_at')->limit(5)->get();
 
         return view('dashboard', compact('stats', 'chart', 'topProducts', 'latestSales', 'latestPurchases'));
