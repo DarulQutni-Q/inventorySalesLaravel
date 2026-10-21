@@ -14,6 +14,10 @@ Laravel-based inventory and sales management system with role-based access contr
 
 ## ERD (Entity Relationship Diagram)
 
+![ERD - Sistem Inventori](erd-inventori.svg)
+
+[Lihat atau edit file sumber Excalidraw (erd-inventori.excalidraw)](./erd-inventori.excalidraw)
+
 ```
 users
   id PK
