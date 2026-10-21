@@ -30,11 +30,11 @@
                         @if (auth()->user()->isAdmin())
                             <td>
                                 <div class="actions">
-                                    <a href="{{ route('categories.edit', $category) }}" class="btn btn-secondary btn-sm">Ubah</a>
-                                    <form action="{{ route('categories.destroy', $category) }}" method="POST" onsubmit="return confirm('Hapus kategori ini?')">
+                                    <a href="{{ route('categories.edit', $category) }}" class="btn-action btn-action-edit">Ubah</a>
+                                    <form action="{{ route('categories.destroy', $category) }}" method="POST" onsubmit="return confirm('Hapus kategori ini?')" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                        <button type="submit" class="btn-action btn-action-delete">Hapus</button>
                                     </form>
                                 </div>
                             </td>

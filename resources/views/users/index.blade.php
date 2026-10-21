@@ -40,12 +40,12 @@
                         </td>
                         <td>
                             <div class="actions">
-                                <a href="{{ route('users.edit', $user) }}" class="btn btn-ghost btn-sm">Ubah</a>
+                                <a href="{{ route('users.edit', $user) }}" class="btn-action btn-action-edit">Ubah</a>
                                 @if ($user->id !== auth()->id())
-                                    <form action="{{ route('users.destroy', $user) }}" method="POST" onsubmit="return confirm('Hapus user ini?')">
+                                    <form action="{{ route('users.destroy', $user) }}" method="POST" onsubmit="return confirm('Hapus user ini?')" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                        <button type="submit" class="btn-action btn-action-delete">Hapus</button>
                                     </form>
                                 @endif
                             </div>

@@ -43,30 +43,34 @@
                     <th>Harga Jual</th>
                     <th>Stok</th>
                     <th>Aksi</th>
+                </tr>
             </thead>
             <tbody>
                 @forelse ($products as $product)
                     <tr>
-                        <td>{{ $product->sku }}</td>
+                        <td><span class="badge-sku">{{ $product->sku }}</span></td>
                         <td>{{ $product->name }}</td>
-                        <td><span style="background:#f1f5f9;color:#334155;border-radius:9999px;padding:.125rem .625rem;font-size:.75rem;display:inline-block;">{{ $product->category->name }}</span></td>
+                        <td><span class="badge-category">{{ $product->category->name }}</span></td>
                         <td>Rp {{ number_format($product->purchase_price, 0, ',', '.') }}</td>
                         <td>Rp {{ number_format($product->selling_price, 0, ',', '.') }}</td>
                         <td>
-                            {{ $product->stock }}
-                            @if ($product->isLowStock())
-                                <span class="badge badge-low">rendah</span>
+                            @if ($product->stock <= 0)
+                                <span class="badge-stock out">Habis</span>
+                            @elseif ($product->isLowStock())
+                                <span class="badge-stock low">{{ $product->stock }} (Menipis)</span>
+                            @else
+                                <span class="badge-stock ok">{{ $product->stock }} pcs</span>
                             @endif
                         </td>
                         <td>
                             <div class="actions">
-                                <a href="{{ route('products.show', $product) }}" class="btn btn-secondary btn-sm">Detail</a>
+                                <a href="{{ route('products.show', $product) }}" class="btn-action btn-action-view">Detail</a>
                                 @if (auth()->user()->isAdmin())
-                                    <a href="{{ route('products.edit', $product) }}" class="btn btn-secondary btn-sm">Ubah</a>
-                                    <form action="{{ route('products.destroy', $product) }}" method="POST" onsubmit="return confirm('Hapus produk ini?')">
+                                    <a href="{{ route('products.edit', $product) }}" class="btn-action btn-action-edit">Ubah</a>
+                                    <form action="{{ route('products.destroy', $product) }}" method="POST" onsubmit="return confirm('Hapus produk ini?')" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                        <button type="submit" class="btn-action btn-action-delete">Hapus</button>
                                     </form>
                                 @endif
                             </div>

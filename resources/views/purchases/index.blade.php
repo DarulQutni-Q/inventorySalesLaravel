@@ -56,14 +56,16 @@
                         <td>{{ $purchase->items_count }}</td>
                         <td>Rp {{ number_format($purchase->total, 0, ',', '.') }}</td>
                         <td>
-                            <a href="{{ route('purchases.show', $purchase) }}" class="btn btn-secondary btn-sm">Detail</a>
-                            @if (auth()->user()->isAdmin() && $purchase->status === 'completed')
-                                <form action="{{ route('purchases.cancel', $purchase) }}" method="POST" style="display:inline"
-                                      onsubmit="return confirm('Batalkan transaksi ini? Stok akan dikembalikan.')">
-                                    @csrf
-                                    <button type="submit" class="btn btn-danger btn-sm">Batal</button>
-                                </form>
-                            @endif
+                            <div class="actions">
+                                <a href="{{ route('purchases.show', $purchase) }}" class="btn-action btn-action-view">Detail</a>
+                                @if (auth()->user()->isAdmin() && $purchase->status === 'completed')
+                                    <form action="{{ route('purchases.cancel', $purchase) }}" method="POST" style="display:inline;"
+                                          onsubmit="return confirm('Batalkan transaksi ini? Stok akan dikembalikan.')">
+                                        @csrf
+                                        <button type="submit" class="btn-action btn-action-delete">Batal</button>
+                                    </form>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                 @empty

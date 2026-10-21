@@ -62,14 +62,16 @@
                             </span>
                         </td>
                         <td>
-                            <a href="{{ route('sales.show', $sale) }}" class="btn btn-secondary btn-sm">Detail</a>
-                            @if (auth()->user()->isAdmin() && $sale->status === 'completed')
-                                <form action="{{ route('sales.cancel', $sale) }}" method="POST" style="display:inline"
-                                      onsubmit="return confirm('Batalkan transaksi ini? Stok akan dikembalikan.')">
-                                    @csrf
-                                    <button type="submit" class="btn btn-danger btn-sm">Batal</button>
-                                </form>
-                            @endif
+                            <div class="actions">
+                                <a href="{{ route('sales.show', $sale) }}" class="btn-action btn-action-view">Detail</a>
+                                @if (auth()->user()->isAdmin() && $sale->status === 'completed')
+                                    <form action="{{ route('sales.cancel', $sale) }}" method="POST" style="display:inline;"
+                                          onsubmit="return confirm('Batalkan transaksi ini? Stok akan dikembalikan.')">
+                                        @csrf
+                                        <button type="submit" class="btn-action btn-action-delete">Batal</button>
+                                    </form>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                 @empty
