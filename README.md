@@ -146,10 +146,10 @@ Test files:
 
 | File | Coverage |
 |------|----------|
+| `tests/Feature/ProductTest.php` | Duplicate SKU rejection, negative price rejection, search & category filter, transaction delete prevention, staff access control |
 | `tests/Feature/PurchaseStoreTest.php` | Purchase creation, BM- prefix, empty-item validation, index display |
 | `tests/Feature/SaleStoreTest.php` | Stock decrement, insufficient-stock rejection, atomicity rollback, SL- prefix |
 | `tests/Feature/AuthTest.php` | Guest redirect, wrong password, staff blocked from admin routes, admin dashboard |
-
 ---
 
 ## Known Limitations
