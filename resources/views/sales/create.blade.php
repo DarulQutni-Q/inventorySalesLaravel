@@ -23,6 +23,16 @@
             <input type="datetime-local" id="sold_at" name="sold_at" value="{{ old('sold_at', now()->format('Y-m-d\TH:i')) }}">
             @error('sold_at')<div class="error-text">{{ $message }}</div>@enderror
         </div>
+        <div class="field">
+            <label for="customer_id">Pelanggan</label>
+            <select id="customer_id" name="customer_id">
+                <option value="">Tanpa pelanggan (walk-in)</option>
+                @foreach ($customers as $customer)
+                    <option value="{{ $customer->id }}" @selected(old('customer_id') == $customer->id)>{{ $customer->name }}</option>
+                @endforeach
+            </select>
+            @error('customer_id')<div class="error-text">{{ $message }}</div>@enderror
+        </div>
     </div>
 
     <div class="section">

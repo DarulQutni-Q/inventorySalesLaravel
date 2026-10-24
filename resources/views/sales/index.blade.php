@@ -38,40 +38,42 @@
 <div class="table-wrap">
     <table>
         <thead>
-            <tr>
-                <th>Nomor</th>
-                <th>Tanggal</th>
-                <th>Oleh</th>
-                <th class="num">Jumlah item</th>
-                <th class="num">Total</th>
-                <th>Status</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($sales as $sale)
                 <tr>
-                    <td><a href="{{ route('sales.show', $sale) }}" class="mono">{{ $sale->sale_number }}</a></td>
-                    <td>{{ $sale->sold_at->format('d/m/Y') }}</td>
-                    <td>{{ $sale->user?->name }}</td>
-                    <td class="num">{{ $sale->items_count }}</td>
-                    <td class="num">Rp {{ number_format($sale->total, 0, ',', '.') }}</td>
-                    <td>{{ $sale->status === 'completed' ? 'Selesai' : 'Batal' }}</td>
-                    <td>
-                        <div class="actions">
-                            <a href="{{ route('sales.show', $sale) }}">Detail</a>
-                            @if (auth()->user()->isAdmin() && $sale->status === 'completed')
-                                <form action="{{ route('sales.cancel', $sale) }}" method="POST" onsubmit="return confirm('Batalkan transaksi ini? Stok akan dikembalikan.')">
-                                    @csrf
-                                    <button type="submit" class="link-btn">Batalkan</button>
-                                </form>
-                            @endif
-                        </div>
-                    </td>
+                    <th>Nomor</th>
+                    <th>Tanggal</th>
+                    <th>Pelanggan</th>
+                    <th>Oleh</th>
+                    <th class="num">Jumlah item</th>
+                    <th class="num">Total</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
                 </tr>
-            @empty
-                <tr><td colspan="7" class="empty-cell">Belum ada data.</td></tr>
-            @endforelse
+            </thead>
+            <tbody>
+                @forelse ($sales as $sale)
+                    <tr>
+                        <td><a href="{{ route('sales.show', $sale) }}" class="mono">{{ $sale->sale_number }}</a></td>
+                        <td>{{ $sale->sold_at->format('d/m/Y') }}</td>
+                        <td>{{ $sale->customer?->name ?? '-' }}</td>
+                        <td>{{ $sale->user?->name }}</td>
+                        <td class="num">{{ $sale->items_count }}</td>
+                        <td class="num">Rp {{ number_format($sale->total, 0, ',', '.') }}</td>
+                        <td>{{ $sale->status === 'completed' ? 'Selesai' : 'Batal' }}</td>
+                        <td>
+                            <div class="actions">
+                                <a href="{{ route('sales.show', $sale) }}">Detail</a>
+                                @if (auth()->user()->isAdmin() && $sale->status === 'completed')
+                                    <form action="{{ route('sales.cancel', $sale) }}" method="POST" onsubmit="return confirm('Batalkan transaksi ini? Stok akan dikembalikan.')">
+                                        @csrf
+                                        <button type="submit" class="link-btn">Batalkan</button>
+                                    </form>
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr><td colspan="8" class="empty-cell">Belum ada data.</td></tr>
+                @endforelse
         </tbody>
     </table>
 </div>

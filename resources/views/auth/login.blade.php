@@ -39,4 +39,10 @@
     Admin: admin@inventory.test / password<br>
     Staff: staff@inventory.test / password
 </div>
+
+<hr class="guest-sep">
+
+<h2>Masuk sebagai Pelanggan</h2>
+<p class="guest-sub">Cukup nama dan nomor telepon, tanpa password.</p>
+<a href="{{ route('customer.login') }}" class="btn btn-block">Lihat katalog</a>
 @endsection

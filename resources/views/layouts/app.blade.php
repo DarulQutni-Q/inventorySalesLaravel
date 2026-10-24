@@ -31,10 +31,17 @@
             <a href="{{ route('products.index') }}" class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">Produk</a>
             <a href="{{ route('categories.index') }}" class="nav-link {{ request()->routeIs('categories.*') ? 'active' : '' }}">Kategori</a>
             <a href="{{ route('suppliers.index') }}" class="nav-link {{ request()->routeIs('suppliers.*') ? 'active' : '' }}">Supplier</a>
+            <a href="{{ route('customers.index') }}" class="nav-link {{ request()->routeIs('customers.*') ? 'active' : '' }}">Pelanggan</a>
 
             <div class="nav-group-title">Transaksi</div>
             <a href="{{ route('purchases.index') }}" class="nav-link {{ request()->routeIs('purchases.*') ? 'active' : '' }}">Barang Masuk</a>
             <a href="{{ route('sales.index') }}" class="nav-link {{ request()->routeIs('sales.*') ? 'active' : '' }}">Penjualan</a>
+            <a href="{{ route('customer-orders.index') }}" class="nav-link {{ request()->routeIs('customer-orders.*') ? 'active' : '' }}">
+                Pesanan Pelanggan
+                @if ($pendingOrderCount > 0)
+                    <span class="nav-link-count">({{ $pendingOrderCount }} menunggu)</span>
+                @endif
+            </a>
 
             @if (auth()->user()->isAdmin())
                 <div class="nav-group-title">Laporan</div>

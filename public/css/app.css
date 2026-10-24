@@ -549,6 +549,30 @@ input[type="checkbox"] {
     text-align: center;
 }
 
+/* Halaman pelanggan: tanpa sidebar, konten di tengah dengan batas lebar sama. */
+.customer-main {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 24px 24px 48px;
+    width: 100%;
+}
+
+/* Form kecil sebaris di dalam sel tabel (katalog, keranjang). */
+.inline-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.inline-form .link-btn {
+    padding: 6px 0;
+}
+
+.input-mini {
+    width: 80px;
+}
+
 /* Mobile: sidebar jadi daftar link di atas konten, form satu kolom. */
 @media (max-width: 768px) {
     .app-body {

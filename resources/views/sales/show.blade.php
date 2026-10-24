@@ -14,6 +14,10 @@
     <table class="detail-table">
         <tr><th>Nomor transaksi</th><td class="mono">{{ $sale->sale_number }}</td></tr>
         <tr><th>Tanggal</th><td>{{ $sale->sold_at->format('d M Y H:i') }}</td></tr>
+        <tr><th>Pelanggan</th><td>{{ $sale->customer?->name ?? '-' }}</td></tr>
+        @if ($sale->customerOrder)
+            <tr><th>Dari pesanan</th><td><a href="{{ route('customer-orders.show', $sale->customerOrder) }}" class="mono">{{ $sale->customerOrder->order_number }}</a></td></tr>
+        @endif
         <tr><th>Dibuat oleh</th><td>{{ $sale->user?->name }}</td></tr>
         <tr><th>Total</th><td>Rp {{ number_format($sale->total, 0, ',', '.') }}</td></tr>
     </table>

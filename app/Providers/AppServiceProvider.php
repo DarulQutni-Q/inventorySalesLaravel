@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\CustomerOrder;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -16,5 +18,10 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::defaultView('vendor.pagination.plain');
         Paginator::defaultSimpleView('vendor.pagination.plain');
+
+        // Angka pesanan menunggu di sidebar, teks polos bukan lonceng.
+        View::composer('layouts.app', function ($view) {
+            $view->with('pendingOrderCount', CustomerOrder::where('status', 'pending')->count());
+        });
     }
 }

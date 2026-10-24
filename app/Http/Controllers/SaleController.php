@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SaleRequest;
 use Illuminate\Http\Request;
+use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Services\SaleService;
@@ -20,7 +21,7 @@ class SaleController extends Controller
             'status' => ['nullable', 'in:completed,cancelled'],
         ]);
 
-        $sales = Sale::with('user')
+        $sales = Sale::with(['user', 'customer'])
             ->withCount('items')
             ->when($filter['dari'] ?? null, fn ($q, $dari) => $q->whereDate('sold_at', '>=', $dari))
             ->when($filter['sampai'] ?? null, fn ($q, $sampai) => $q->whereDate('sold_at', '<=', $sampai))
@@ -43,10 +44,11 @@ class SaleController extends Controller
             'price' => $p->selling_price,
             'stock' => $p->stock,
         ])->values()->toArray();
+        $customers = Customer::orderBy('name')->get();
 
         $nextNumber = $service->generateNumber();
 
-        return view('sales.create', compact('products', 'productsJson', 'nextNumber'));
+        return view('sales.create', compact('products', 'productsJson', 'customers', 'nextNumber'));
     }
 
     public function store(SaleRequest $request, SaleService $service)
@@ -59,7 +61,7 @@ class SaleController extends Controller
 
     public function show(Sale $sale)
     {
-        $sale->load(['user', 'items.product']);
+        $sale->load(['user', 'customer', 'items.product']);
 
         return view('sales.show', compact('sale'));
     }

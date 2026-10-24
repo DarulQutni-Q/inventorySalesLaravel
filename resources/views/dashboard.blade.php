@@ -31,6 +31,13 @@
                 <a href="{{ route('reports.low-stock') }}">Lihat stok rendah</a>
             </td>
         </tr>
+        <tr>
+            <td>Pesanan menunggu konfirmasi</td>
+            <td class="num">
+                {{ $stats['pesanan_menunggu'] }}
+                <a href="{{ route('customer-orders.index') }}">Lihat pesanan pelanggan</a>
+            </td>
+        </tr>
     </tbody>
 </table>
 
@@ -41,6 +48,7 @@
             <thead>
                 <tr>
                     <th>Nomor</th>
+                    <th>Pelanggan</th>
                     <th>Tanggal</th>
                     <th class="num">Total</th>
                     <th>Status</th>
@@ -50,12 +58,13 @@
                 @forelse ($latestSales as $sale)
                     <tr>
                         <td><a href="{{ route('sales.show', $sale) }}" class="mono">{{ $sale->sale_number }}</a></td>
+                        <td>{{ $sale->customer?->name ?? '-' }}</td>
                         <td>{{ $sale->sold_at->format('d/m/Y H:i') }}</td>
                         <td class="num">Rp {{ number_format($sale->total, 0, ',', '.') }}</td>
                         <td>{{ $sale->status === 'completed' ? 'Selesai' : 'Batal' }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="4" class="empty-cell">Belum ada data.</td></tr>
+                    <tr><td colspan="5" class="empty-cell">Belum ada data.</td></tr>
                 @endforelse
             </tbody>
         </table>

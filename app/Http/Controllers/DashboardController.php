@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CustomerOrder;
 use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Sale;
@@ -24,9 +25,10 @@ class DashboardController extends Controller
                 ->whereMonth('sold_at', now()->month)
                 ->sum('total'),
             'produk_stok_rendah'  => $lowStockCount,
+            'pesanan_menunggu'    => CustomerOrder::where('status', 'pending')->count(),
         ];
 
-        $latestSales = Sale::with('user')
+        $latestSales = Sale::with(['user', 'customer'])
             ->latest('sold_at')
             ->limit(5)
             ->get();
