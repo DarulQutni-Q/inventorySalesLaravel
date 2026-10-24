@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\CustomerOrder;
 use App\Models\Product;
+use App\Models\Sale;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
