@@ -54,7 +54,7 @@
 
 @if ($order->status === 'pending')
     <div class="form-actions">
-        <form method="POST" action="{{ route('customer-orders.confirm', $order) }}" onsubmit="return confirm('Konfirmasi pesanan ini? Penjualan dibuat dan stok berkurang.')">
+        <form method="POST" action="{{ route('customer-orders.confirm', $order) }}">
             @csrf
             <button type="submit" class="btn">Konfirmasi jadi Penjualan</button>
         </form>

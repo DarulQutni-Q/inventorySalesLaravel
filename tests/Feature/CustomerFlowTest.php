@@ -235,6 +235,24 @@ class CustomerFlowTest extends TestCase
         $this->assertSame(9, $product->fresh()->stock);
     }
 
+    /** Konfirmasi pesanan menangani exception tak terduga tanpa melempar ke system error page. */
+    public function test_confirm_order_handles_unexpected_exception(): void
+    {
+        $staff = $this->staffUser();
+        $customer = Customer::create(['name' => 'Toko Bu Ani', 'phone' => '0812-9999-0011']);
+        $product = $this->makeProduct(stock: 10);
+        $order = $this->makeOrder($customer, $product, 1);
+
+        $this->mock(\App\Services\CustomerOrderService::class, function ($mock) {
+            $mock->shouldReceive('confirm')->andThrow(new \Exception('Koneksi database terputus.'));
+        });
+
+        $this->actingAs($staff)
+            ->post(route('customer-orders.confirm', $order))
+            ->assertRedirect(route('customer-orders.show', $order))
+            ->assertSessionHas('error', 'Terjadi kesalahan saat memproses pesanan: Koneksi database terputus.');
+    }
+
     /** Pelanggan hanya bisa melihat pesanan miliknya sendiri. */
     public function test_customer_cannot_view_others_order(): void
     {

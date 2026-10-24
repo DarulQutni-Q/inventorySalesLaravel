@@ -9,7 +9,7 @@
 <body>
 <header class="app-header">
     <div class="app-header-inner">
-        <a href="{{ url('/') }}" class="app-name">Inventori dan Penjualan</a>
+        <a href="{{ url('/') }}" class="app-name"><svg class="brand-mark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="4" y="4" width="16" height="16"/><path d="M4 9h16"/><path d="M12 9v11"/></svg>Inventori dan Penjualan</a>
         <div class="app-header-right">
             <span class="app-user">{{ auth()->user()->name }} ({{ auth()->user()->role }})</span>
             <form method="POST" action="{{ route('logout') }}">

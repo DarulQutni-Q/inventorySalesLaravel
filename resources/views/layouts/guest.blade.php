@@ -9,7 +9,7 @@
 <body class="guest-body">
 <div class="guest-wrap">
     <div class="guest-brand">
-        <span class="guest-brand-name">Inventori dan Penjualan</span>
+        <span class="guest-brand-name"><svg class="brand-mark" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="4" y="4" width="16" height="16"/><path d="M4 9h16"/><path d="M12 9v11"/></svg>Inventori dan Penjualan</span>
         <span class="guest-brand-sub">Distribusi sembako</span>
     </div>
     @yield('content')

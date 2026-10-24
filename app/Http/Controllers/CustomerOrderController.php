@@ -38,6 +38,9 @@ class CustomerOrderController extends Controller
         } catch (ValidationException $e) {
             return redirect()->route('customer-orders.show', $order)
                 ->with('error', collect($e->errors())->flatten()->implode(' '));
+        } catch (\Throwable $e) {
+            return redirect()->route('customer-orders.show', $order)
+                ->with('error', 'Terjadi kesalahan saat memproses pesanan: ' . $e->getMessage());
         }
 
         return redirect()->route('sales.show', $sale)
