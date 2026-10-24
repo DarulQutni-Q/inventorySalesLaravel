@@ -4,110 +4,99 @@
 
 @section('content')
 <div class="page-head">
-    <h1>Laporan Transaksi</h1>
-    <form method="GET" action="{{ route('reports.transactions') }}" class="filter-bar" style="margin-bottom:0;">
-        <div>
-            <label for="dari">Dari</label>
-            <input type="date" id="dari" name="dari" value="{{ $dari }}">
-        </div>
-        <div>
-            <label for="sampai">Sampai</label>
-            <input type="date" id="sampai" name="sampai" value="{{ $sampai }}">
-        </div>
-        <div>
-            <button type="submit" class="btn btn-ghost">Filter</button>
-        </div>
-    </form>
-</div>
-
-<div class="stats">
-    <div class="stat">
-        <div class="label">Total Pembelian <span style="font-weight:400;color:#94a3b8;">({{ $dari }} s/d {{ $sampai }})</span></div>
-        <div class="value small">Rp {{ number_format($totalPurchase, 0, ',', '.') }}</div>
-    </div>
-    <div class="stat">
-        <div class="label">Total Penjualan <span style="font-weight:400;color:#94a3b8;">({{ $dari }} s/d {{ $sampai }})</span></div>
-        <div class="value small">Rp {{ number_format($totalSale, 0, ',', '.') }}</div>
+    <div>
+        <h1>Laporan Transaksi</h1>
+        <p class="page-desc">Ringkasan pembelian dan penjualan pada rentang tanggal.</p>
     </div>
 </div>
 
-<div class="card" style="margin-bottom:16px;">
-    <h2 style="margin:0 0 16px;font-size:16px;font-weight:600;color:#0f172a;">Pembelian (Barang Masuk)</h2>
+<form method="GET" action="{{ route('reports.transactions') }}" class="filter-bar">
+    <div class="field">
+        <label for="dari">Dari tanggal</label>
+        <input type="date" id="dari" name="dari" value="{{ $dari }}">
+    </div>
+    <div class="field">
+        <label for="sampai">Sampai tanggal</label>
+        <input type="date" id="sampai" name="sampai" value="{{ $sampai }}">
+    </div>
+    <div class="filter-actions">
+        <button type="submit" class="btn">Cari</button>
+        <a href="{{ route('reports.transactions') }}">Reset</a>
+    </div>
+</form>
+
+<table>
+    <tbody>
+        <tr>
+            <td>Total pembelian ({{ $dari }} s/d {{ $sampai }})</td>
+            <td class="num">Rp {{ number_format($totalPurchase, 0, ',', '.') }}</td>
+        </tr>
+        <tr>
+            <td>Total penjualan ({{ $dari }} s/d {{ $sampai }})</td>
+            <td class="num">Rp {{ number_format($totalSale, 0, ',', '.') }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="section">
+    <h2>Pembelian</h2>
     <div class="table-wrap">
         <table>
             <thead>
                 <tr>
-                    <th>No. Transaksi</th>
+                    <th>Nomor</th>
                     <th>Tanggal</th>
                     <th>Supplier</th>
-                    <th>Total</th>
+                    <th class="num">Total</th>
                     <th>Status</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($purchases as $purchase)
                     <tr>
-                        <td>
-                            <a href="{{ route('purchases.show', $purchase) }}"
-                               style="color:#0f172a;font-weight:500;text-decoration:none;font-family:monospace;">
-                                {{ $purchase->purchase_number }}
-                            </a>
-                        </td>
-                        <td style="color:#64748b;">{{ $purchase->purchased_at->format('d M Y H:i') }}</td>
-                        <td style="color:#475569;">{{ $purchase->supplier->name }}</td>
-                        <td style="font-weight:600;color:#0f172a;">Rp {{ number_format($purchase->total, 0, ',', '.') }}</td>
-                        <td>
-                            <span class="badge {{ $purchase->status === 'completed' ? 'badge-done' : 'badge-cancel' }}">
-                                {{ $purchase->status === 'completed' ? 'Selesai' : 'Dibatalkan' }}
-                            </span>
-                        </td>
+                        <td><a href="{{ route('purchases.show', $purchase) }}" class="mono">{{ $purchase->purchase_number }}</a></td>
+                        <td>{{ $purchase->purchased_at->format('d/m/Y H:i') }}</td>
+                        <td>{{ $purchase->supplier?->name }}</td>
+                        <td class="num">Rp {{ number_format($purchase->total, 0, ',', '.') }}</td>
+                        <td>{{ $purchase->status === 'completed' ? 'Selesai' : 'Batal' }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="5" class="empty">Tidak ada pembelian pada rentang tanggal ini.</td></tr>
+                    <tr><td colspan="5" class="empty-cell">Belum ada data.</td></tr>
                 @endforelse
             </tbody>
         </table>
     </div>
-    <div class="pagination">{{ $purchases->links() }}</div>
+    {{ $purchases->links() }}
 </div>
 
-<div class="card">
-    <h2 style="margin:0 0 16px;font-size:16px;font-weight:600;color:#0f172a;">Penjualan (Barang Keluar)</h2>
+<div class="section">
+    <h2>Penjualan</h2>
     <div class="table-wrap">
         <table>
             <thead>
                 <tr>
-                    <th>No. Transaksi</th>
+                    <th>Nomor</th>
                     <th>Tanggal</th>
                     <th>Oleh</th>
-                    <th>Total</th>
+                    <th class="num">Total</th>
                     <th>Status</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($sales as $sale)
                     <tr>
-                        <td>
-                            <a href="{{ route('sales.show', $sale) }}"
-                               style="color:#0f172a;font-weight:500;text-decoration:none;font-family:monospace;">
-                                {{ $sale->sale_number }}
-                            </a>
-                        </td>
-                        <td style="color:#64748b;">{{ $sale->sold_at->format('d M Y H:i') }}</td>
-                        <td style="color:#475569;">{{ $sale->user->name }}</td>
-                        <td style="font-weight:600;color:#0f172a;">Rp {{ number_format($sale->total, 0, ',', '.') }}</td>
-                        <td>
-                            <span class="badge {{ $sale->status === 'completed' ? 'badge-done' : 'badge-cancel' }}">
-                                {{ $sale->status === 'completed' ? 'Selesai' : 'Dibatalkan' }}
-                            </span>
-                        </td>
+                        <td><a href="{{ route('sales.show', $sale) }}" class="mono">{{ $sale->sale_number }}</a></td>
+                        <td>{{ $sale->sold_at->format('d/m/Y H:i') }}</td>
+                        <td>{{ $sale->user?->name }}</td>
+                        <td class="num">Rp {{ number_format($sale->total, 0, ',', '.') }}</td>
+                        <td>{{ $sale->status === 'completed' ? 'Selesai' : 'Batal' }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="5" class="empty">Tidak ada penjualan pada rentang tanggal ini.</td></tr>
+                    <tr><td colspan="5" class="empty-cell">Belum ada data.</td></tr>
                 @endforelse
             </tbody>
         </table>
     </div>
-    <div class="pagination">{{ $sales->links() }}</div>
+    {{ $sales->links() }}
 </div>
 @endsection
