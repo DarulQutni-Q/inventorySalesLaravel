@@ -59,11 +59,9 @@ Pelanggan tidak perlu akun: di halaman masuk ada tautan "Masuk sebagai Pelanggan
 
 ## ERD dan Relasi
 
-![ERD - Sistem Inventori](erd-inventori.svg)
+[Lihat atau edit diagram ERD (erd-sembako.excalidraw)](./erd-sembako.excalidraw)
 
-[Lihat atau edit file sumber Excalidraw (erd-inventori.excalidraw)](./erd-inventori.excalidraw)
-
-Catatan jujur: gambar `erd-inventori.svg` dan `erd-inventori.png` masih skema lama (belum ada tabel customers dan customer_orders). Teks relasi di bawah ini yang terbaru; file Excalidraw perlu diregenerasi dari teks ini.
+Diagram di file tersebut adalah skema yang sedang jalan, sudah memuat tabel pelanggan dan pesanan, dan sama dengan teks relasi di bawah.
 
 ```
 users
@@ -172,5 +170,4 @@ Tampilannya seperti buku stok gudang: kertas putih, tinta hitam, garis tipis 1px
 ## Keterbatasan
 
 - Satu gudang, tanpa multi-lokasi stok
-- Gambar ERD (`erd-inventori.svg`, `erd-inventori.png`) masih skema lama, belum memuat tabel pelanggan dan pesanan; file Excalidraw perlu diregenerasi dari teks relasi di atas
 - Identitas pelanggan (nama dan telepon di session) bukan autentikasi yang aman untuk produksi
