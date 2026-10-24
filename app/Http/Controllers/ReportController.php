@@ -10,19 +10,18 @@ use Illuminate\Http\Request;
 class ReportController extends Controller
 {
     /**
-     * Daftar produk dengan stok di bawah batas (default 5).
+     * Daftar produk yang stoknya sudah menyentuh batas minimum.
+     * Aturan ini sama dengan Product::isLowStock dan dashboard.
      */
-    public function lowStock(Request $request)
+    public function lowStock()
     {
-        $threshold = max(1, (int) $request->query('batas', 5));
-
         $products = Product::with('category')
-            ->where('stock', '<', $threshold)
+            ->whereColumn('stock', '<=', 'minimum_stock')
             ->orderBy('stock')
             ->paginate(15)
             ->withQueryString();
 
-        return view('reports.low-stock', compact('products', 'threshold'));
+        return view('reports.low-stock', compact('products'));
     }
 
     /**
