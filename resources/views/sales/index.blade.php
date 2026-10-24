@@ -4,82 +4,78 @@
 
 @section('content')
 <div class="page-head">
-    <h1>Penjualan</h1>
-    <a href="{{ route('sales.create') }}" class="btn btn-primary">+ Tambah Penjualan</a>
+    <div>
+        <h1>Penjualan</h1>
+        <p class="page-desc">Stok berkurang saat transaksi disimpan, dicek dengan lockForUpdate.</p>
+    </div>
+    <a href="{{ route('sales.create') }}" class="btn">Buat Penjualan</a>
 </div>
 
-<div class="card">
-    <form method="GET" action="{{ route('sales.index') }}" class="filter-bar">
-        <div>
-            <label for="dari">Dari Tanggal</label>
-            <input type="date" id="dari" name="dari" value="{{ $filter['dari'] ?? '' }}">
-        </div>
-        <div>
-            <label for="sampai">Sampai Tanggal</label>
-            <input type="date" id="sampai" name="sampai" value="{{ $filter['sampai'] ?? '' }}">
-        </div>
-        <div>
-            <label for="status">Status</label>
-            <select id="status" name="status">
-                <option value="">Semua</option>
-                <option value="completed" @selected(($filter['status'] ?? '') === 'completed')>Selesai</option>
-                <option value="cancelled" @selected(($filter['status'] ?? '') === 'cancelled')>Dibatalkan</option>
-            </select>
-        </div>
-        <div>
-            <button type="submit" class="btn btn-primary">Filter</button>
-            <a href="{{ route('sales.index') }}" class="btn btn-secondary">Reset</a>
-        </div>
-    </form>
-    @error('sampai')<div class="error-text" style="margin-bottom: 12px;">{{ $message }}</div>@enderror
+<form method="GET" action="{{ route('sales.index') }}" class="filter-bar">
+    <div class="field">
+        <label for="dari">Dari tanggal</label>
+        <input type="date" id="dari" name="dari" value="{{ $filter['dari'] ?? '' }}">
+    </div>
+    <div class="field">
+        <label for="sampai">Sampai tanggal</label>
+        <input type="date" id="sampai" name="sampai" value="{{ $filter['sampai'] ?? '' }}">
+    </div>
+    <div class="field">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+            <option value="">Semua</option>
+            <option value="completed" @selected(($filter['status'] ?? '') === 'completed')>Selesai</option>
+            <option value="cancelled" @selected(($filter['status'] ?? '') === 'cancelled')>Batal</option>
+        </select>
+    </div>
+    <div class="filter-actions">
+        <button type="submit" class="btn">Cari</button>
+        <a href="{{ route('sales.index') }}">Reset</a>
+    </div>
+</form>
+@error('sampai')<div class="error-text" style="margin-bottom: 12px;">{{ $message }}</div>@enderror
 
-    <div class="table-wrap">
-        <table>
-            <thead>
+<div class="table-wrap">
+    <table>
+        <thead>
                 <tr>
-                    <th>NO</th>
-                    <th>NO FAKTUR</th>
-                    <th>TANGGAL</th>
-                    <th>OLEH</th>
-                    <th>TOTAL ITEM</th>
-                    <th>TOTAL HARGA</th>
-                    <th>STATUS</th>
-                    <th>AKSI</th>
+                    <th>Nomor</th>
+                    <th>Tanggal</th>
+                    <th>Pelanggan</th>
+                    <th>Oleh</th>
+                    <th class="num">Jumlah item</th>
+                    <th class="num">Total</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse ($sales as $i => $sale)
+                @forelse ($sales as $sale)
                     <tr>
-                        <td>{{ $sales->firstItem() + $i }}</td>
-                        <td><a href="{{ route('sales.show', $sale) }}">{{ $sale->sale_number }}</a></td>
+                        <td><a href="{{ route('sales.show', $sale) }}" class="mono">{{ $sale->sale_number }}</a></td>
                         <td>{{ $sale->sold_at->format('d/m/Y') }}</td>
-                        <td>{{ $sale->user->name }}</td>
-                        <td>{{ $sale->items_count }}</td>
-                        <td>Rp {{ number_format($sale->total, 0, ',', '.') }}</td>
-                        <td>
-                            <span class="badge {{ $sale->status === 'completed' ? 'badge-done' : 'badge-cancel' }}">
-                                {{ $sale->status === 'completed' ? 'Selesai' : 'Dibatalkan' }}
-                            </span>
-                        </td>
+                        <td>{{ $sale->customer?->name ?? '-' }}</td>
+                        <td>{{ $sale->user?->name }}</td>
+                        <td class="num">{{ $sale->items_count }}</td>
+                        <td class="num">Rp {{ number_format($sale->total, 0, ',', '.') }}</td>
+                        <td>{{ $sale->status === 'completed' ? 'Selesai' : 'Batal' }}</td>
                         <td>
                             <div class="actions">
-                                <a href="{{ route('sales.show', $sale) }}" class="btn-action btn-action-view">Detail</a>
+                                <a href="{{ route('sales.show', $sale) }}">Detail</a>
                                 @if (auth()->user()->isAdmin() && $sale->status === 'completed')
-                                    <form action="{{ route('sales.cancel', $sale) }}" method="POST" style="display:inline;"
-                                          onsubmit="return confirm('Batalkan transaksi ini? Stok akan dikembalikan.')">
+                                    <form action="{{ route('sales.cancel', $sale) }}" method="POST" onsubmit="return confirm('Batalkan transaksi ini? Stok akan dikembalikan.')">
                                         @csrf
-                                        <button type="submit" class="btn-action btn-action-delete">Batal</button>
+                                        <button type="submit" class="link-btn">Batalkan</button>
                                     </form>
                                 @endif
                             </div>
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="8" class="empty">Tidak ada transaksi penjualan yang cocok.</td></tr>
+                    <tr><td colspan="8" class="empty-cell">Belum ada data.</td></tr>
                 @endforelse
-            </tbody>
-        </table>
-    </div>
-    <div class="pagination">{{ $sales->links() }}</div>
+        </tbody>
+    </table>
 </div>
+{{ $sales->links() }}
 @endsection

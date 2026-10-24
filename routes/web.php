@@ -2,6 +2,12 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\Customer\AccessController;
+use App\Http\Controllers\Customer\CartController;
+use App\Http\Controllers\Customer\CatalogController;
+use App\Http\Controllers\Customer\OrderController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerOrderController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
@@ -27,6 +33,23 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [LoginController::class, 'authenticate']);
 });
 
+// Area pelanggan: identitas nama dan telepon di session, tanpa password.
+// Berada di luar middleware auth supaya pelanggan tidak perlu akun user.
+Route::get('/pelanggan/masuk', [AccessController::class, 'showLogin'])->name('customer.login');
+Route::post('/pelanggan/masuk', [AccessController::class, 'login'])->name('customer.login.post');
+
+Route::middleware('customer')->group(function () {
+    Route::get('/katalog', [CatalogController::class, 'index'])->name('catalog.index');
+    Route::post('/katalog/tambah', [CatalogController::class, 'add'])->name('catalog.add');
+    Route::get('/keranjang', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/keranjang/update', [CartController::class, 'update'])->name('cart.update');
+    Route::post('/keranjang/hapus/{product}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/keranjang/pesan', [CartController::class, 'checkout'])->name('cart.checkout');
+    Route::get('/pesanan-saya', [OrderController::class, 'index'])->name('customer.orders.index');
+    Route::get('/pesanan-saya/{order}', [OrderController::class, 'show'])->name('customer.orders.show');
+    Route::post('/pelanggan/keluar', [AccessController::class, 'logout'])->name('customer.logout');
+});
+
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
@@ -43,6 +66,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/sales', [SaleController::class, 'store'])->name('sales.store');
     Route::get('/sales/{sale}', [SaleController::class, 'show'])->name('sales.show');
 
+    // Pesanan pelanggan: staff dan admin sama-sama boleh memproses.
+    Route::get('/pesanan-pelanggan', [CustomerOrderController::class, 'index'])->name('customer-orders.index');
+    Route::get('/pesanan-pelanggan/{order}', [CustomerOrderController::class, 'show'])->name('customer-orders.show');
+    Route::post('/pesanan-pelanggan/{order}/confirm', [CustomerOrderController::class, 'confirm'])->name('customer-orders.confirm');
+    Route::post('/pesanan-pelanggan/{order}/reject', [CustomerOrderController::class, 'reject'])->name('customer-orders.reject');
+
     // Master data: lihat untuk semua user login, ubah hanya untuk admin.
     // Route admin didaftarkan dulu supaya /products/create tidak tertangkap
     // oleh /products/{product} (route show yang didaftarkan setelahnya).
@@ -55,6 +84,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('categories', CategoryController::class)->except(['index']);
         Route::resource('products', ProductController::class)->except(['index', 'show']);
         Route::resource('suppliers', SupplierController::class)->except(['index']);
+        Route::resource('customers', CustomerController::class)->except(['index', 'show']);
         Route::post('/purchases/{purchase}/cancel', [PurchaseController::class, 'cancel'])->name('purchases.cancel');
         Route::post('/sales/{sale}/cancel', [SaleController::class, 'cancel'])->name('sales.cancel');
         Route::resource('users', UserController::class)->except(['show']);
@@ -62,4 +92,5 @@ Route::middleware('auth')->group(function () {
     Route::resource('categories', CategoryController::class)->only(['index']);
     Route::resource('products', ProductController::class)->only(['index', 'show']);
     Route::resource('suppliers', SupplierController::class)->only(['index']);
+    Route::resource('customers', CustomerController::class)->only(['index']);
 });

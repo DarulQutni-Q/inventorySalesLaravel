@@ -42,6 +42,9 @@ class SaleService
             // Fase 2: semua item valid, simpan header, item, dan kurangi stok.
             $sale = Sale::create([
                 'user_id' => $userId,
+                // customer_order_id null di sini; sale dari konfirmasi
+                // pesanan dibuat lewat CustomerOrderService, bukan form ini.
+                'customer_id' => $data['customer_id'] ?? null,
                 'sale_number' => $this->generateNumber(),
                 'total' => 0,
                 'status' => 'completed',

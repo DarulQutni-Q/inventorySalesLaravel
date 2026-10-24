@@ -24,6 +24,8 @@ class SaleRequest extends FormRequest
     {
         return [
             'sold_at' => ['nullable', 'date'],
+            // Pelanggan opsional: penjualan walk-in boleh tanpa pelanggan.
+            'customer_id' => ['nullable', 'exists:customers,id'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'distinct', 'exists:products,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
