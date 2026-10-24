@@ -46,7 +46,7 @@ class CatalogController extends Controller
         // Stok tidak dikurangi di sini; keputusan stok ada di konfirmasi
         // staff, supaya alur pelanggan dan alur stok tetap terpisah.
         if ($product->stock <= 0) {
-            return redirect()->route('catalog.index')
+            return redirect()->back()
                 ->with('error', $product->name . ' sedang habis, tidak bisa ditambahkan.');
         }
 
@@ -55,7 +55,9 @@ class CatalogController extends Controller
 
         session(['cart' => $cart]);
 
-        return redirect()->route('cart.index')
+        // Tetap di katalog supaya pelanggan bisa lanjung memilih barang;
+        // halaman keranjang dibuka lewat tautan Keranjang di atas.
+        return redirect()->back()
             ->with('success', $product->name . ' masuk keranjang.');
     }
 }

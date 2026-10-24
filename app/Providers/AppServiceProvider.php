@@ -23,5 +23,10 @@ class AppServiceProvider extends ServiceProvider
         View::composer('layouts.app', function ($view) {
             $view->with('pendingOrderCount', CustomerOrder::where('status', 'pending')->count());
         });
+
+        // Jumlah barang di keranjang untuk tautan di header pelanggan.
+        View::composer('layouts.customer', function ($view) {
+            $view->with('cartCount', array_sum(session('cart', [])));
+        });
     }
 }

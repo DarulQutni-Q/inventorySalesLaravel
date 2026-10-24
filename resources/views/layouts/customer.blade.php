@@ -13,7 +13,7 @@
         <div class="app-header-right">
             <span class="app-user">{{ session('customer_name') }}</span>
             <a href="{{ route('catalog.index') }}">Katalog</a>
-            <a href="{{ route('cart.index') }}">Keranjang</a>
+            <a href="{{ route('cart.index') }}">Keranjang{{ $cartCount > 0 ? ' (' . $cartCount . ')' : '' }}</a>
             <a href="{{ route('customer.orders.index') }}">Pesanan Saya</a>
             <form method="POST" action="{{ route('customer.logout') }}">
                 @csrf
