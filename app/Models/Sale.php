@@ -10,6 +10,8 @@ class Sale extends Model
 {
     protected $fillable = [
         'user_id',
+        'customer_id',
+        'customer_order_id',
         'sale_number',
         'total',
         'status',
@@ -27,6 +29,18 @@ class Sale extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    // customer_id boleh null: penjualan walk-in tanpa pelanggan terdaftar.
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    // Terisi hanya kalau sale ini berasal dari konfirmasi pesanan pelanggan.
+    public function customerOrder(): BelongsTo
+    {
+        return $this->belongsTo(CustomerOrder::class);
     }
 
     public function items(): HasMany
