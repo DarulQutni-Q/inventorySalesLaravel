@@ -59,9 +59,11 @@ Pelanggan tidak perlu akun: di halaman masuk ada tautan "Masuk sebagai Pelanggan
 
 ## ERD dan Relasi
 
-[Lihat atau edit diagram ERD (erd-sembako.excalidraw)](./erd-sembako.excalidraw)
+![ERD - Sistem Inventori dan Penjualan](erd-sembako.svg)
 
-Diagram di file tersebut adalah skema yang sedang jalan, sudah memuat tabel pelanggan dan pesanan, dan sama dengan teks relasi di bawah.
+[Lihat atau edit file sumber Excalidraw (erd-sembako.excalidraw)](./erd-sembako.excalidraw)
+
+Diagram di atas adalah skema yang sedang jalan, sudah memuat tabel pelanggan dan pesanan, dan sama dengan teks relasi di bawah.
 
 ```
 users
