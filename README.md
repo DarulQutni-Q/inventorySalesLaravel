@@ -33,7 +33,7 @@ php artisan serve
 ```
 
 Buka http://127.0.0.1:8000. Tidak ada langkah npm karena aplikasi tidak memakai build asset.
-
+![Screenshot Dashboard Sistem Inventori dan Penjualan](image.png)
 ## Akun Demo
 
 | Role   | Email                 | Password |
