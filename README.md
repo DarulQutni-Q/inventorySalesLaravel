@@ -18,8 +18,8 @@ Aplikasi inventori dan penjualan untuk distribusi sembako: catat barang masuk, j
 ## Instalasi
 
 ```bash
-git clone <url-repo-ini>
-cd inventorySalesRaravel
+git clone https://github.com/DarulQutni-Q/inventorySalesLaravel.git
+cd inventorySalesLaravel
 composer install
 cp .env.example .env
 php artisan key:generate
